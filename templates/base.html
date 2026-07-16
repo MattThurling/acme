@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Acme Ltd — Dental Equipment{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="{{ url_for('shop') }}">
+        <span class="brand-mark">A</span>
+        <span>Acme Ltd <small>Dental Equipment</small></span>
+      </a>
+      <nav>
+        <a href="{{ url_for('shop') }}" {% if request.endpoint == 'shop' %}class="active"{% endif %}>Store</a>
+        <a href="{{ url_for('portal') }}" {% if request.endpoint == 'portal' %}class="active"{% endif %}>Staff portal</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      Acme Ltd is a demo integrator. Finance is arranged through
+      <strong>Medifinance</strong> via its partner API.
+    </div>
+  </footer>
+</body>
+</html>
