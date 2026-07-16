@@ -77,6 +77,31 @@ nav a {
 
 nav a.active, nav a:hover { color: var(--brand-dark); }
 
+/* Signed-in user chip */
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #dcebe7;
+  color: var(--brand-dark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.avatar-admin { background: #e2e7f5; color: #33427a; }
+
+.user-details { line-height: 1.25; }
+.user-details strong { display: block; font-size: 13px; }
+.user-details small { color: var(--muted); font-size: 11px; }
+
 /* Hero */
 .hero {
   padding: 48px 0 8px;
@@ -114,10 +139,6 @@ nav a.active, nav a:hover { color: var(--brand-dark); }
 }
 
 .price { font-size: 24px; font-weight: 700; }
-
-.finance-price { font-size: 14px; color: var(--ink); margin-top: 2px; }
-.finance-price strong { color: var(--brand-dark); }
-.finance-terms { display: block; font-size: 12px; color: var(--muted); }
 
 .product-actions { display: flex; gap: 10px; }
 
@@ -185,6 +206,43 @@ nav a.active, nav a:hover { color: var(--brand-dark); }
   font-size: 24px;
   color: var(--muted);
   cursor: pointer;
+}
+
+/* Confirmation details in the finance modal */
+.confirm-details {
+  margin: 0 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.confirm-details > div {
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+.confirm-details > div + div { border-top: 1px solid var(--line); }
+
+.confirm-details dt {
+  width: 72px;
+  flex: none;
+  color: var(--muted);
+}
+
+.confirm-details dd { margin: 0; font-weight: 600; }
+
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #e5f4ef;
+  color: var(--brand-dark);
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: 1px;
 }
 
 /* Forms */

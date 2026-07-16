@@ -1,21 +1,22 @@
 # Acme Ltd — Medifinance API demo
 
 A demo dental-equipment supplier site showing how a partner integrates with
-the **Medifinance public API**. Static HTML/CSS/JS plus two Vercel serverless
-functions:
+the **Medifinance public API**. Static HTML/CSS/JS plus one Vercel serverless
+function:
 
-- **Store** (`/`) — customer-facing product list. Each product shows an
-  indicative "from £X/month" price (live from Medifinance `POST /api/quotes/`)
-  with **Buy Now** and **Get Finance** buttons. Get Finance opens a short form
-  that creates a deal via `POST /api/deals/`; the customer then receives
-  Medifinance's portal magic-link email.
-- **Staff portal** (`/portal`) — Acme staff enter a sale on behalf of a
-  customer; same deal-create call.
+- **Store** (`/`) — customer-facing product list with **Buy Now** and
+  **Get Finance** buttons. The demo pretends a customer is already signed in
+  (Jack Jones of JJ Dental Ltd), so Get Finance is a one-click confirmation:
+  it creates a deal via `POST /api/deals/` using the account details Acme
+  already holds, and the customer then receives Medifinance's portal
+  magic-link email.
+- **Staff portal** (`/portal`) — an Acme admin (John Doe in the demo) enters
+  a sale and the customer's details on their behalf; same deal-create call.
 
-The serverless functions (`api/quotes.js`, `api/finance.js`) proxy the
-Medifinance API so the bearer key stays server-side — it is never exposed to
-the browser, and amounts are looked up by product id so they can't be
-tampered with client-side.
+The serverless function (`api/finance.js`) proxies the Medifinance API so the
+bearer key stays server-side — it is never exposed to the browser, and
+amounts are looked up by product id so they can't be tampered with
+client-side.
 
 ## Setup
 
@@ -55,11 +56,9 @@ reachable from Vercel (i.e. the production Medifinance host, not localhost).
 
 ## Notes
 
-- Monthly prices are quoted over 60 months; `/api/quotes` responses are
-  edge-cached for 5 minutes. Products with no covering rate band simply omit
-  the finance price.
 - The Medifinance API dedups repeat applications (same email within 24h) —
   the UI reports this as "we already have your application".
 - Medifinance rate-limits deal creation per key (5/hour, 25/day); the UI
   surfaces a friendly "try again later" message on 429.
-- The staff portal is deliberately unauthenticated — this is a demo.
+- The signed-in users on both pages are hardcoded personas — there is no real
+  authentication. This is a demo.

@@ -17,6 +17,13 @@
         <a href="/" class="active">Store</a>
         <a href="/portal">Staff portal</a>
       </nav>
+      <div class="user-chip">
+        <span class="avatar">JJ</span>
+        <span class="user-details">
+          <strong>Jack Jones</strong>
+          <small>JJ Dental Ltd</small>
+        </span>
+      </div>
     </div>
   </header>
 
@@ -36,7 +43,6 @@
         </div>
         <div class="product-pricing">
           <div class="price">£64,500</div>
-          <div class="finance-price" hidden></div>
         </div>
         <div class="product-actions">
           <button class="btn btn-secondary buy-now">Buy Now</button>
@@ -52,7 +58,6 @@
         </div>
         <div class="product-pricing">
           <div class="price">£48,900</div>
-          <div class="finance-price" hidden></div>
         </div>
         <div class="product-actions">
           <button class="btn btn-secondary buy-now">Buy Now</button>
@@ -68,7 +73,6 @@
         </div>
         <div class="product-pricing">
           <div class="price">£32,750</div>
-          <div class="finance-price" hidden></div>
         </div>
         <div class="product-actions">
           <button class="btn btn-secondary buy-now">Buy Now</button>
@@ -84,7 +88,6 @@
         </div>
         <div class="product-pricing">
           <div class="price">£27,400</div>
-          <div class="finance-price" hidden></div>
         </div>
         <div class="product-actions">
           <button class="btn btn-secondary buy-now">Buy Now</button>
@@ -100,7 +103,6 @@
         </div>
         <div class="product-pricing">
           <div class="price">£18,950</div>
-          <div class="finance-price" hidden></div>
         </div>
         <div class="product-actions">
           <button class="btn btn-secondary buy-now">Buy Now</button>
@@ -116,7 +118,6 @@
         </div>
         <div class="product-pricing">
           <div class="price">£14,200</div>
-          <div class="finance-price" hidden></div>
         </div>
         <div class="product-actions">
           <button class="btn btn-secondary buy-now">Buy Now</button>
@@ -133,7 +134,7 @@
     </div>
   </footer>
 
-  <!-- Get Finance modal -->
+  <!-- Get Finance confirmation modal -->
   <div class="modal-backdrop" id="finance-modal" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
@@ -141,33 +142,20 @@
       <div id="finance-form-panel">
         <h2 id="modal-title">Apply for finance</h2>
         <p class="modal-product" id="modal-product"></p>
-        <form id="finance-form">
-          <input type="hidden" name="product_id" id="finance-product-id">
-          <div class="form-row">
-            <label>First name
-              <input type="text" name="first_name" required autocomplete="given-name">
-            </label>
-            <label>Last name
-              <input type="text" name="last_name" required autocomplete="family-name">
-            </label>
-          </div>
-          <label>Email address
-            <input type="email" name="email" required autocomplete="email">
-          </label>
-          <label class="checkbox">
-            <input type="checkbox" name="ltd">
-            My practice is a limited company
-          </label>
-          <p class="small-print">
-            Submitting starts a finance application with Medifinance. You'll
-            receive an email with a secure link to complete it — nothing is
-            charged today.
-          </p>
-          <div class="form-error" id="finance-error" hidden></div>
-          <button type="submit" class="btn btn-primary btn-wide" id="finance-submit">
-            Submit application
-          </button>
-        </form>
+        <dl class="confirm-details">
+          <div><dt>Name</dt><dd>Jack Jones</dd></div>
+          <div><dt>Email</dt><dd>jack@jjdental.com</dd></div>
+          <div><dt>Company</dt><dd>JJ Dental Ltd <span class="tag">Limited company</span></dd></div>
+        </dl>
+        <p class="small-print">
+          Confirming starts a finance application with Medifinance using the
+          account details above. You'll receive an email with a secure link to
+          complete it — nothing is charged today.
+        </p>
+        <div class="form-error" id="finance-error" hidden></div>
+        <button type="button" class="btn btn-primary btn-wide" id="finance-submit">
+          Confirm application
+        </button>
       </div>
 
       <div id="finance-success-panel" hidden>
@@ -180,24 +168,17 @@
   </div>
 
   <script>
-  const modal = document.getElementById('finance-modal');
-  const form = document.getElementById('finance-form');
+  // The "signed-in" store customer. A real integration would take this from
+  // Acme's own account system — hardcoded here for the demo.
+  const CUSTOMER = {
+    first_name: 'Jack',
+    last_name: 'Jones',
+    email: 'jack@jjdental.com',
+    ltd: true,
+  };
 
-  // Fill in "from £X/month" prices from the live quote API.
-  fetch('/api/quotes')
-    .then((resp) => resp.json())
-    .then(({ quotes }) => {
-      for (const quote of quotes) {
-        const card = document.querySelector(`.product-card[data-id="${quote.id}"]`);
-        if (!card) continue;
-        card.dataset.monthly = quote.monthly_payment;
-        const el = card.querySelector('.finance-price');
-        el.innerHTML = `or from <strong>£${quote.monthly_payment}/month</strong>
-          <span class="finance-terms">over ${quote.term_months} months · ${quote.apr}% APR</span>`;
-        el.hidden = false;
-      }
-    })
-    .catch(() => {});   // no quotes — cards just show the cash price
+  const modal = document.getElementById('finance-modal');
+  let selectedProductId = null;
 
   document.getElementById('product-grid').addEventListener('click', (e) => {
     const card = e.target.closest('.product-card');
@@ -205,24 +186,18 @@
     if (e.target.closest('.buy-now')) {
       alert(`Demo store — '${card.dataset.name}' would go to checkout here.\n\nThis site exists to demonstrate the Get Finance flow.`);
     } else if (e.target.closest('.get-finance')) {
-      openFinanceModal(card);
+      selectedProductId = card.dataset.id;
+      document.getElementById('modal-product').textContent =
+        `${card.dataset.name} — £${card.dataset.price}`;
+      document.getElementById('finance-form-panel').hidden = false;
+      document.getElementById('finance-success-panel').hidden = true;
+      document.getElementById('finance-error').hidden = true;
+      modal.hidden = false;
     }
   });
 
-  function openFinanceModal(card) {
-    document.getElementById('finance-product-id').value = card.dataset.id;
-    document.getElementById('modal-product').textContent =
-      `${card.dataset.name} — £${card.dataset.price}` +
-      (card.dataset.monthly ? ` (from £${card.dataset.monthly}/month)` : '');
-    document.getElementById('finance-form-panel').hidden = false;
-    document.getElementById('finance-success-panel').hidden = true;
-    document.getElementById('finance-error').hidden = true;
-    modal.hidden = false;
-  }
-
   function closeFinanceModal() {
     modal.hidden = true;
-    form.reset();
   }
 
   document.getElementById('modal-close').addEventListener('click', closeFinanceModal);
@@ -231,8 +206,7 @@
     if (e.target === modal) closeFinanceModal();
   });
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  document.getElementById('finance-submit').addEventListener('click', async () => {
     const submit = document.getElementById('finance-submit');
     const errorBox = document.getElementById('finance-error');
     errorBox.hidden = true;
@@ -242,21 +216,13 @@
       const resp = await fetch('/api/finance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          source: 'store',
-          product_id: form.product_id.value,
-          first_name: form.first_name.value,
-          last_name: form.last_name.value,
-          email: form.email.value,
-          ltd: form.ltd.checked,
-        }),
+        body: JSON.stringify({ source: 'store', product_id: selectedProductId, ...CUSTOMER }),
       });
       const data = await resp.json();
       if (data.ok) {
         document.getElementById('finance-success-message').textContent = data.message;
         document.getElementById('finance-form-panel').hidden = true;
         document.getElementById('finance-success-panel').hidden = false;
-        form.reset();
       } else {
         errorBox.textContent = data.message || 'Something went wrong — please try again.';
         errorBox.hidden = false;
@@ -266,7 +232,7 @@
       errorBox.hidden = false;
     } finally {
       submit.disabled = false;
-      submit.textContent = 'Submit application';
+      submit.textContent = 'Confirm application';
     }
   });
   </script>
