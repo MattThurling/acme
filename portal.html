@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Staff Portal — Acme Ltd</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">A</span>
+        <span>Acme Ltd <small>Dental Equipment</small></span>
+      </a>
+      <nav>
+        <a href="/">Store</a>
+        <a href="/portal" class="active">Staff portal</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="portal">
+      <div class="portal-header">
+        <h1>Staff portal</h1>
+        <p>Record a sale on behalf of a customer. Submitting sends the customer
+           a finance application link by email and creates the deal in the
+           Medifinance CRM.</p>
+      </div>
+
+      <div class="alert alert-success" id="portal-success" hidden></div>
+      <div class="alert alert-error" id="portal-error" hidden></div>
+
+      <form class="portal-form" id="portal-form">
+        <label>Equipment
+          <select name="product_id" required>
+            <option value="" disabled selected>Select a product…</option>
+            <option value="cbct-scanner">OrthoVision 3D CBCT Scanner — £64,500</option>
+            <option value="cadcam-mill">CeraMill Pro CAD/CAM Milling Unit — £48,900</option>
+            <option value="chair-package">ErgoDent Signature Surgery Package — £32,750</option>
+            <option value="panoramic-xray">PanoraMax OPG/Ceph X-ray System — £27,400</option>
+            <option value="intraoral-scanner">ScanRite IO Intraoral Scanner — £18,950</option>
+            <option value="sterilisation-suite">SteriSafe Decontamination Suite — £14,200</option>
+          </select>
+        </label>
+
+        <div class="form-row">
+          <label>Customer first name
+            <input type="text" name="first_name" required>
+          </label>
+          <label>Customer last name
+            <input type="text" name="last_name" required>
+          </label>
+        </div>
+
+        <label>Customer email
+          <input type="email" name="email" required>
+        </label>
+
+        <label class="checkbox">
+          <input type="checkbox" name="ltd">
+          Customer's practice is a limited company
+        </label>
+
+        <button type="submit" class="btn btn-primary btn-wide" id="portal-submit">
+          Submit sale &amp; send finance application
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      Acme Ltd is a demo integrator. Finance is arranged through
+      <strong>Medifinance</strong> via its partner API.
+    </div>
+  </footer>
+
+  <script>
+  const form = document.getElementById('portal-form');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submit = document.getElementById('portal-submit');
+    const successBox = document.getElementById('portal-success');
+    const errorBox = document.getElementById('portal-error');
+    successBox.hidden = true;
+    errorBox.hidden = true;
+    submit.disabled = true;
+
+    const productName = form.product_id.selectedOptions[0].textContent.split(' — ')[0];
+    const customer = `${form.first_name.value} ${form.last_name.value} <${form.email.value}>`;
+
+    try {
+      const resp = await fetch('/api/finance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: 'portal',
+          product_id: form.product_id.value,
+          first_name: form.first_name.value,
+          last_name: form.last_name.value,
+          email: form.email.value,
+          ltd: form.ltd.checked,
+        }),
+      });
+      const data = await resp.json();
+      if (data.ok) {
+        successBox.innerHTML =
+          `<strong>Deal #${data.deal_id} ${data.deduplicated ? 'matched' : 'created'}.</strong> ` +
+          `${productName} for ${customer.replace(/</g, '&lt;').replace(/>/g, '&gt;')}.<br>${data.message}`;
+        successBox.hidden = false;
+        form.reset();
+      } else {
+        errorBox.innerHTML = `<strong>Not submitted.</strong> ${data.message}`;
+        errorBox.hidden = false;
+      }
+    } catch {
+      errorBox.innerHTML = '<strong>Not submitted.</strong> Could not reach the server — please try again.';
+      errorBox.hidden = false;
+    } finally {
+      submit.disabled = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+  </script>
+</body>
+</html>

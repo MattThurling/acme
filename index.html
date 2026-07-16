@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acme Ltd — Dental Equipment</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">A</span>
+        <span>Acme Ltd <small>Dental Equipment</small></span>
+      </a>
+      <nav>
+        <a href="/" class="active">Store</a>
+        <a href="/portal">Staff portal</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Outfit your practice with the best.</h1>
+      <p>Premium dental equipment, delivered and installed — buy outright or
+         spread the cost with flexible finance from our partner Medifinance.</p>
+    </section>
+
+    <section class="product-grid" id="product-grid">
+      <article class="product-card" data-id="cbct-scanner" data-name="OrthoVision 3D CBCT Scanner" data-price="64,500">
+        <div class="product-body">
+          <h2>OrthoVision 3D CBCT Scanner</h2>
+          <p>Cone-beam CT with full-arch 3D imaging, low-dose protocols and
+             chairside treatment planning software.</p>
+        </div>
+        <div class="product-pricing">
+          <div class="price">£64,500</div>
+          <div class="finance-price" hidden></div>
+        </div>
+        <div class="product-actions">
+          <button class="btn btn-secondary buy-now">Buy Now</button>
+          <button class="btn btn-primary get-finance">Get Finance</button>
+        </div>
+      </article>
+
+      <article class="product-card" data-id="cadcam-mill" data-name="CeraMill Pro CAD/CAM Milling Unit" data-price="48,900">
+        <div class="product-body">
+          <h2>CeraMill Pro CAD/CAM Milling Unit</h2>
+          <p>5-axis wet/dry milling for same-day crowns, bridges and implant
+             abutments. Includes design suite licence.</p>
+        </div>
+        <div class="product-pricing">
+          <div class="price">£48,900</div>
+          <div class="finance-price" hidden></div>
+        </div>
+        <div class="product-actions">
+          <button class="btn btn-secondary buy-now">Buy Now</button>
+          <button class="btn btn-primary get-finance">Get Finance</button>
+        </div>
+      </article>
+
+      <article class="product-card" data-id="chair-package" data-name="ErgoDent Signature Surgery Package" data-price="32,750">
+        <div class="product-body">
+          <h2>ErgoDent Signature Surgery Package</h2>
+          <p>Premium treatment centre: chair, delivery unit, operating light
+             and stools, fully installed.</p>
+        </div>
+        <div class="product-pricing">
+          <div class="price">£32,750</div>
+          <div class="finance-price" hidden></div>
+        </div>
+        <div class="product-actions">
+          <button class="btn btn-secondary buy-now">Buy Now</button>
+          <button class="btn btn-primary get-finance">Get Finance</button>
+        </div>
+      </article>
+
+      <article class="product-card" data-id="panoramic-xray" data-name="PanoraMax OPG/Ceph X-ray System" data-price="27,400">
+        <div class="product-body">
+          <h2>PanoraMax OPG/Ceph X-ray System</h2>
+          <p>Digital panoramic and cephalometric imaging with automatic
+             patient positioning.</p>
+        </div>
+        <div class="product-pricing">
+          <div class="price">£27,400</div>
+          <div class="finance-price" hidden></div>
+        </div>
+        <div class="product-actions">
+          <button class="btn btn-secondary buy-now">Buy Now</button>
+          <button class="btn btn-primary get-finance">Get Finance</button>
+        </div>
+      </article>
+
+      <article class="product-card" data-id="intraoral-scanner" data-name="ScanRite IO Intraoral Scanner" data-price="18,950">
+        <div class="product-body">
+          <h2>ScanRite IO Intraoral Scanner</h2>
+          <p>Powder-free full-colour intraoral scanning with open STL export
+             and cart workstation.</p>
+        </div>
+        <div class="product-pricing">
+          <div class="price">£18,950</div>
+          <div class="finance-price" hidden></div>
+        </div>
+        <div class="product-actions">
+          <button class="btn btn-secondary buy-now">Buy Now</button>
+          <button class="btn btn-primary get-finance">Get Finance</button>
+        </div>
+      </article>
+
+      <article class="product-card" data-id="sterilisation-suite" data-name="SteriSafe Decontamination Suite" data-price="14,200">
+        <div class="product-body">
+          <h2>SteriSafe Decontamination Suite</h2>
+          <p>B-class autoclave, washer-disinfector and reverse osmosis unit —
+             a complete compliant decon room.</p>
+        </div>
+        <div class="product-pricing">
+          <div class="price">£14,200</div>
+          <div class="finance-price" hidden></div>
+        </div>
+        <div class="product-actions">
+          <button class="btn btn-secondary buy-now">Buy Now</button>
+          <button class="btn btn-primary get-finance">Get Finance</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      Acme Ltd is a demo integrator. Finance is arranged through
+      <strong>Medifinance</strong> via its partner API.
+    </div>
+  </footer>
+
+  <!-- Get Finance modal -->
+  <div class="modal-backdrop" id="finance-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+
+      <div id="finance-form-panel">
+        <h2 id="modal-title">Apply for finance</h2>
+        <p class="modal-product" id="modal-product"></p>
+        <form id="finance-form">
+          <input type="hidden" name="product_id" id="finance-product-id">
+          <div class="form-row">
+            <label>First name
+              <input type="text" name="first_name" required autocomplete="given-name">
+            </label>
+            <label>Last name
+              <input type="text" name="last_name" required autocomplete="family-name">
+            </label>
+          </div>
+          <label>Email address
+            <input type="email" name="email" required autocomplete="email">
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" name="ltd">
+            My practice is a limited company
+          </label>
+          <p class="small-print">
+            Submitting starts a finance application with Medifinance. You'll
+            receive an email with a secure link to complete it — nothing is
+            charged today.
+          </p>
+          <div class="form-error" id="finance-error" hidden></div>
+          <button type="submit" class="btn btn-primary btn-wide" id="finance-submit">
+            Submit application
+          </button>
+        </form>
+      </div>
+
+      <div id="finance-success-panel" hidden>
+        <div class="success-icon">✓</div>
+        <h2>Application sent</h2>
+        <p id="finance-success-message"></p>
+        <button class="btn btn-secondary btn-wide" id="finance-done">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const modal = document.getElementById('finance-modal');
+  const form = document.getElementById('finance-form');
+
+  // Fill in "from £X/month" prices from the live quote API.
+  fetch('/api/quotes')
+    .then((resp) => resp.json())
+    .then(({ quotes }) => {
+      for (const quote of quotes) {
+        const card = document.querySelector(`.product-card[data-id="${quote.id}"]`);
+        if (!card) continue;
+        card.dataset.monthly = quote.monthly_payment;
+        const el = card.querySelector('.finance-price');
+        el.innerHTML = `or from <strong>£${quote.monthly_payment}/month</strong>
+          <span class="finance-terms">over ${quote.term_months} months · ${quote.apr}% APR</span>`;
+        el.hidden = false;
+      }
+    })
+    .catch(() => {});   // no quotes — cards just show the cash price
+
+  document.getElementById('product-grid').addEventListener('click', (e) => {
+    const card = e.target.closest('.product-card');
+    if (!card) return;
+    if (e.target.closest('.buy-now')) {
+      alert(`Demo store — '${card.dataset.name}' would go to checkout here.\n\nThis site exists to demonstrate the Get Finance flow.`);
+    } else if (e.target.closest('.get-finance')) {
+      openFinanceModal(card);
+    }
+  });
+
+  function openFinanceModal(card) {
+    document.getElementById('finance-product-id').value = card.dataset.id;
+    document.getElementById('modal-product').textContent =
+      `${card.dataset.name} — £${card.dataset.price}` +
+      (card.dataset.monthly ? ` (from £${card.dataset.monthly}/month)` : '');
+    document.getElementById('finance-form-panel').hidden = false;
+    document.getElementById('finance-success-panel').hidden = true;
+    document.getElementById('finance-error').hidden = true;
+    modal.hidden = false;
+  }
+
+  function closeFinanceModal() {
+    modal.hidden = true;
+    form.reset();
+  }
+
+  document.getElementById('modal-close').addEventListener('click', closeFinanceModal);
+  document.getElementById('finance-done').addEventListener('click', closeFinanceModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeFinanceModal();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submit = document.getElementById('finance-submit');
+    const errorBox = document.getElementById('finance-error');
+    errorBox.hidden = true;
+    submit.disabled = true;
+    submit.textContent = 'Submitting…';
+    try {
+      const resp = await fetch('/api/finance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: 'store',
+          product_id: form.product_id.value,
+          first_name: form.first_name.value,
+          last_name: form.last_name.value,
+          email: form.email.value,
+          ltd: form.ltd.checked,
+        }),
+      });
+      const data = await resp.json();
+      if (data.ok) {
+        document.getElementById('finance-success-message').textContent = data.message;
+        document.getElementById('finance-form-panel').hidden = true;
+        document.getElementById('finance-success-panel').hidden = false;
+        form.reset();
+      } else {
+        errorBox.textContent = data.message || 'Something went wrong — please try again.';
+        errorBox.hidden = false;
+      }
+    } catch {
+      errorBox.textContent = 'Could not reach the server — please try again.';
+      errorBox.hidden = false;
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Submit application';
+    }
+  });
+  </script>
+</body>
+</html>
