@@ -146,6 +146,9 @@ nav a.active, nav a:hover { color: var(--brand-dark); }
 .btn-wide { width: 100%; flex: none; }
 
 /* Modal */
+/* display: grid would override the `hidden` attribute's UA display: none */
+.modal-backdrop[hidden] { display: none; }
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
