@@ -1,0 +1,44 @@
+[
+  {
+    "id": "cbct-scanner",
+    "name": "OrthoVision 3D CBCT Scanner",
+    "price": 64500,
+    "category": "imaging",
+    "description": "Cone-beam CT with full-arch 3D imaging, low-dose protocols and chairside treatment planning software."
+  },
+  {
+    "id": "cadcam-mill",
+    "name": "CeraMill Pro CAD/CAM Milling Unit",
+    "price": 48900,
+    "category": "lab",
+    "description": "5-axis wet/dry milling for same-day crowns, bridges and implant abutments. Includes design suite licence."
+  },
+  {
+    "id": "chair-package",
+    "name": "ErgoDent Signature Surgery Package",
+    "price": 32750,
+    "category": "surgery",
+    "description": "Premium treatment centre: dental chair, delivery unit, operating light and stools, fully installed."
+  },
+  {
+    "id": "panoramic-xray",
+    "name": "PanoraMax OPG/Ceph X-ray System",
+    "price": 27400,
+    "category": "imaging",
+    "description": "Digital panoramic and cephalometric imaging with automatic patient positioning."
+  },
+  {
+    "id": "intraoral-scanner",
+    "name": "ScanRite IO Intraoral Scanner",
+    "price": 18950,
+    "category": "imaging",
+    "description": "Powder-free full-colour intraoral scanning with open STL export and cart workstation."
+  },
+  {
+    "id": "sterilisation-suite",
+    "name": "SteriSafe Decontamination Suite",
+    "price": 14200,
+    "category": "decontamination",
+    "description": "B-class autoclave, washer-disinfector and reverse osmosis unit — a complete compliant decon room."
+  }
+]

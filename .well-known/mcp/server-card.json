@@ -1,0 +1,19 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+  "name": "app.vercel.acme-amber-beta/acme-store",
+  "title": "Acme Ltd Dental Equipment",
+  "description": "Search Acme Ltd's dental and medical equipment catalogue and start a Medifinance finance application for a product on the user's behalf. Public, no authentication; interactive cards via MCP Apps.",
+  "version": "1.0.0",
+  "websiteUrl": "https://acme-amber-beta.vercel.app",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://acme-amber-beta.vercel.app/api/mcp",
+      "supportedProtocolVersions": ["2025-11-25", "2025-06-18", "2025-03-26"]
+    }
+  ],
+  "_meta": {
+    "app.vercel.acme-amber-beta/tools": ["search_products", "get_product", "request_finance"],
+    "app.vercel.acme-amber-beta/authentication": { "required": false }
+  }
+}

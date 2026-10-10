@@ -5,20 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Staff Portal — Acme Ltd</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="mcp" href="/.well-known/mcp/server-card.json">
 </head>
 <body>
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/">
-        <span class="brand-mark">A</span>
+        <span class="brand-mark" aria-hidden="true">A</span>
         <span>Acme Ltd <small>Dental Equipment</small></span>
       </a>
-      <nav>
+      <nav aria-label="Site">
         <a href="/">Store</a>
-        <a href="/portal" class="active">Staff portal</a>
+        <a href="/portal" class="active" aria-current="page">Staff portal</a>
       </nav>
       <div class="user-chip">
-        <span class="avatar avatar-admin">JD</span>
+        <span class="avatar avatar-admin" aria-hidden="true">JD</span>
         <span class="user-details">
           <strong>John Doe</strong>
           <small>Admin</small>
@@ -36,39 +37,47 @@
            Medifinance CRM.</p>
       </div>
 
-      <div class="alert alert-success" id="portal-success" hidden></div>
-      <div class="alert alert-error" id="portal-error" hidden></div>
+      <div class="alert alert-success" id="portal-success" role="status" hidden></div>
+      <div class="alert alert-error" id="portal-error" role="alert" hidden></div>
 
       <form class="portal-form" id="portal-form">
-        <label>Equipment
-          <select name="product_id" required>
+        <div class="field">
+          <label for="p-product_id">Equipment</label>
+          <select id="p-product_id" name="product_id" required>
             <option value="" disabled selected>Select a product…</option>
-            <option value="cbct-scanner">OrthoVision 3D CBCT Scanner — £64,500</option>
-            <option value="cadcam-mill">CeraMill Pro CAD/CAM Milling Unit — £48,900</option>
-            <option value="chair-package">ErgoDent Signature Surgery Package — £32,750</option>
-            <option value="panoramic-xray">PanoraMax OPG/Ceph X-ray System — £27,400</option>
-            <option value="intraoral-scanner">ScanRite IO Intraoral Scanner — £18,950</option>
-            <option value="sterilisation-suite">SteriSafe Decontamination Suite — £14,200</option>
           </select>
-        </label>
-
-        <div class="form-row">
-          <label>Customer first name
-            <input type="text" name="first_name" required>
-          </label>
-          <label>Customer last name
-            <input type="text" name="last_name" required>
-          </label>
+          <div class="field-error" id="err-product_id" hidden></div>
         </div>
 
-        <label>Customer email
-          <input type="email" name="email" required>
-        </label>
+        <div class="form-row">
+          <div class="field">
+            <label for="p-first_name">Customer first name</label>
+            <input id="p-first_name" type="text" name="first_name" autocomplete="off" maxlength="150" required>
+            <div class="field-error" id="err-first_name" hidden></div>
+          </div>
+          <div class="field">
+            <label for="p-last_name">Customer last name</label>
+            <input id="p-last_name" type="text" name="last_name" autocomplete="off" maxlength="150" required>
+            <div class="field-error" id="err-last_name" hidden></div>
+          </div>
+        </div>
 
-        <label class="checkbox">
-          <input type="checkbox" name="ltd">
-          Customer's practice is a limited company
-        </label>
+        <div class="field">
+          <label for="p-email">Customer email</label>
+          <input id="p-email" type="email" name="email" autocomplete="off" maxlength="254" required>
+          <div class="field-error" id="err-email" hidden></div>
+        </div>
+
+        <div class="field">
+          <label for="p-company_type">Customer's company type</label>
+          <select id="p-company_type" name="company_type" required>
+            <option value="" disabled selected>Select…</option>
+            <option value="limited_company">Limited company</option>
+            <option value="sole_trader">Sole trader</option>
+            <option value="partnership">Partnership</option>
+          </select>
+          <div class="field-error" id="err-company_type" hidden></div>
+        </div>
 
         <button type="submit" class="btn btn-primary btn-wide" id="portal-submit">
           Submit sale &amp; send finance application
@@ -86,6 +95,28 @@
 
   <script>
   const form = document.getElementById('portal-form');
+  const FIELDS = ['product_id', 'first_name', 'last_name', 'email', 'company_type'];
+  const gbp = (n) => '£' + Number(n).toLocaleString('en-GB');
+
+  fetch('/products.json').then((r) => r.json()).then((products) => {
+    const select = document.getElementById('p-product_id');
+    for (const p of products) {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${p.name} — ${gbp(p.price)}`;
+      select.append(opt);
+    }
+  });
+
+  function clearErrors() {
+    for (const f of FIELDS) {
+      const input = document.getElementById(`p-${f}`);
+      const err = document.getElementById(`err-${f}`);
+      err.hidden = true; err.textContent = '';
+      input.removeAttribute('aria-invalid');
+      input.removeAttribute('aria-describedby');
+    }
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -94,10 +125,16 @@
     const errorBox = document.getElementById('portal-error');
     successBox.hidden = true;
     errorBox.hidden = true;
+    clearErrors();
     submit.disabled = true;
 
-    const productName = form.product_id.selectedOptions[0].textContent.split(' — ')[0];
+    const productName = form.product_id.selectedOptions[0]?.textContent.split(' — ')[0] || '';
     const customer = `${form.first_name.value} ${form.last_name.value} <${form.email.value}>`;
+    let idempotencyKey = form.dataset.idempotencyKey;
+    if (!idempotencyKey) {
+      idempotencyKey = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
+      form.dataset.idempotencyKey = idempotencyKey;
+    }
 
     try {
       const resp = await fetch('/api/finance', {
@@ -105,26 +142,47 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           source: 'portal',
-          product_id: form.product_id.value,
-          first_name: form.first_name.value,
-          last_name: form.last_name.value,
-          email: form.email.value,
-          ltd: form.ltd.checked,
+          idempotency_key: idempotencyKey,
+          ...Object.fromEntries(new FormData(form).entries()),
         }),
       });
-      const data = await resp.json();
+      const data = await resp.json().catch(() => ({}));
       if (data.ok) {
-        successBox.innerHTML =
-          `<strong>Deal #${data.deal_id} ${data.deduplicated ? 'matched' : 'created'}.</strong> ` +
-          `${productName} for ${customer.replace(/</g, '&lt;').replace(/>/g, '&gt;')}.<br>${data.message}`;
+        successBox.replaceChildren(
+          Object.assign(document.createElement('strong'), {
+            textContent: `Application ${data.application_reference || ''} ${data.deduplicated ? 'already open' : 'started'}.`,
+          }),
+          ` ${productName} for ${customer}.`,
+          document.createElement('br'),
+          data.message,
+        );
         successBox.hidden = false;
         form.reset();
+        delete form.dataset.idempotencyKey;
       } else {
-        errorBox.innerHTML = `<strong>Not submitted.</strong> ${data.message}`;
+        const general = [];
+        for (const err of data.errors || []) {
+          if (err.field && FIELDS.includes(err.field)) {
+            const input = document.getElementById(`p-${err.field}`);
+            const box = document.getElementById(`err-${err.field}`);
+            box.textContent = err.message; box.hidden = false;
+            input.setAttribute('aria-invalid', 'true');
+            input.setAttribute('aria-describedby', `err-${err.field}`);
+          } else {
+            general.push(err.message);
+          }
+        }
+        errorBox.replaceChildren(
+          Object.assign(document.createElement('strong'), { textContent: 'Not submitted.' }),
+          ' ' + (general.join(' ') || data.message || 'Please check the highlighted fields.'),
+        );
         errorBox.hidden = false;
       }
     } catch {
-      errorBox.innerHTML = '<strong>Not submitted.</strong> Could not reach the server — please try again.';
+      errorBox.replaceChildren(
+        Object.assign(document.createElement('strong'), { textContent: 'Not submitted.' }),
+        ' Could not reach the server — please try again.',
+      );
       errorBox.hidden = false;
     } finally {
       submit.disabled = false;

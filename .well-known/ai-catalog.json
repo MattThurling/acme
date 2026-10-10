@@ -1,0 +1,8 @@
+{
+  "entries": [
+    {
+      "type": "mcp-server-card",
+      "url": "https://acme-amber-beta.vercel.app/.well-known/mcp/server-card.json"
+    }
+  ]
+}
