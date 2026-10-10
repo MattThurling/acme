@@ -5,24 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Acme Ltd — Dental Equipment</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="mcp" href="/.well-known/mcp/server-card.json">
 </head>
 <body>
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/">
-        <span class="brand-mark">A</span>
+        <span class="brand-mark" aria-hidden="true">A</span>
         <span>Acme Ltd <small>Dental Equipment</small></span>
       </a>
-      <nav>
-        <a href="/" class="active">Store</a>
+      <nav aria-label="Site">
+        <a href="/" class="active" aria-current="page">Store</a>
         <a href="/portal">Staff portal</a>
       </nav>
-      <div class="user-chip">
-        <span class="avatar">JJ</span>
-        <span class="user-details">
-          <strong>Jack Jones</strong>
-          <small>JJ Dental Ltd</small>
-        </span>
+      <div class="user-chip" id="user-chip">
+        <!-- rendered by renderSession() -->
       </div>
     </div>
   </header>
@@ -34,96 +31,8 @@
          spread the cost with flexible finance from our partner Medifinance.</p>
     </section>
 
-    <section class="product-grid" id="product-grid">
-      <article class="product-card" data-id="cbct-scanner" data-name="OrthoVision 3D CBCT Scanner" data-price="64,500">
-        <div class="product-body">
-          <h2>OrthoVision 3D CBCT Scanner</h2>
-          <p>Cone-beam CT with full-arch 3D imaging, low-dose protocols and
-             chairside treatment planning software.</p>
-        </div>
-        <div class="product-pricing">
-          <div class="price">£64,500</div>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-secondary buy-now">Buy Now</button>
-          <button class="btn btn-primary get-finance">Get Finance</button>
-        </div>
-      </article>
-
-      <article class="product-card" data-id="cadcam-mill" data-name="CeraMill Pro CAD/CAM Milling Unit" data-price="48,900">
-        <div class="product-body">
-          <h2>CeraMill Pro CAD/CAM Milling Unit</h2>
-          <p>5-axis wet/dry milling for same-day crowns, bridges and implant
-             abutments. Includes design suite licence.</p>
-        </div>
-        <div class="product-pricing">
-          <div class="price">£48,900</div>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-secondary buy-now">Buy Now</button>
-          <button class="btn btn-primary get-finance">Get Finance</button>
-        </div>
-      </article>
-
-      <article class="product-card" data-id="chair-package" data-name="ErgoDent Signature Surgery Package" data-price="32,750">
-        <div class="product-body">
-          <h2>ErgoDent Signature Surgery Package</h2>
-          <p>Premium treatment centre: chair, delivery unit, operating light
-             and stools, fully installed.</p>
-        </div>
-        <div class="product-pricing">
-          <div class="price">£32,750</div>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-secondary buy-now">Buy Now</button>
-          <button class="btn btn-primary get-finance">Get Finance</button>
-        </div>
-      </article>
-
-      <article class="product-card" data-id="panoramic-xray" data-name="PanoraMax OPG/Ceph X-ray System" data-price="27,400">
-        <div class="product-body">
-          <h2>PanoraMax OPG/Ceph X-ray System</h2>
-          <p>Digital panoramic and cephalometric imaging with automatic
-             patient positioning.</p>
-        </div>
-        <div class="product-pricing">
-          <div class="price">£27,400</div>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-secondary buy-now">Buy Now</button>
-          <button class="btn btn-primary get-finance">Get Finance</button>
-        </div>
-      </article>
-
-      <article class="product-card" data-id="intraoral-scanner" data-name="ScanRite IO Intraoral Scanner" data-price="18,950">
-        <div class="product-body">
-          <h2>ScanRite IO Intraoral Scanner</h2>
-          <p>Powder-free full-colour intraoral scanning with open STL export
-             and cart workstation.</p>
-        </div>
-        <div class="product-pricing">
-          <div class="price">£18,950</div>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-secondary buy-now">Buy Now</button>
-          <button class="btn btn-primary get-finance">Get Finance</button>
-        </div>
-      </article>
-
-      <article class="product-card" data-id="sterilisation-suite" data-name="SteriSafe Decontamination Suite" data-price="14,200">
-        <div class="product-body">
-          <h2>SteriSafe Decontamination Suite</h2>
-          <p>B-class autoclave, washer-disinfector and reverse osmosis unit —
-             a complete compliant decon room.</p>
-        </div>
-        <div class="product-pricing">
-          <div class="price">£14,200</div>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-secondary buy-now">Buy Now</button>
-          <button class="btn btn-primary get-finance">Get Finance</button>
-        </div>
-      </article>
+    <section class="product-grid" id="product-grid" aria-label="Products" aria-busy="true">
+      <!-- product cards rendered from /products.json -->
     </section>
   </main>
 
@@ -131,110 +40,327 @@
     <div class="container">
       Acme Ltd is a demo integrator. Finance is arranged through
       <strong>Medifinance</strong> via its partner API.
+      <span class="footer-note">AI agents: this store has an MCP server — see the README.</span>
     </div>
   </footer>
 
-  <!-- Get Finance confirmation modal -->
-  <div class="modal-backdrop" id="finance-modal" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+  <!-- Non-blocking replacement for alert(): agents can read it, nothing blocks. -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-      <div id="finance-form-panel">
+  <!-- Get Finance dialog. Closed = [hidden] = display:none, so it is absent from
+       the accessibility tree until opened. -->
+  <div class="modal-backdrop" id="finance-modal" hidden>
+    <div class="modal" id="finance-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button type="button" class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+
+      <form id="finance-form">
         <h2 id="modal-title">Apply for finance</h2>
         <p class="modal-product" id="modal-product"></p>
-        <dl class="confirm-details">
-          <div><dt>Name</dt><dd>Jack Jones</dd></div>
-          <div><dt>Email</dt><dd>jack@jjdental.com</dd></div>
-          <div><dt>Company</dt><dd>JJ Dental Ltd <span class="tag">Limited company</span></dd></div>
-        </dl>
-        <p class="small-print">
-          Confirming starts a finance application with Medifinance using the
-          account details above. You'll receive an email with a secure link to
-          complete it — nothing is charged today.
-        </p>
-        <div class="form-error" id="finance-error" hidden></div>
-        <button type="button" class="btn btn-primary btn-wide" id="finance-submit">
+
+        <div id="signed-in-details">
+          <dl class="confirm-details">
+            <div><dt>Name</dt><dd id="confirm-name"></dd></div>
+            <div><dt>Email</dt><dd id="confirm-email"></dd></div>
+            <div><dt>Company</dt><dd id="confirm-company"></dd></div>
+          </dl>
+        </div>
+
+        <div id="guest-fields" hidden>
+          <div class="form-row">
+            <div class="field">
+              <label for="f-first_name">First name</label>
+              <input id="f-first_name" name="first_name" type="text" autocomplete="given-name" maxlength="150" required>
+              <div class="field-error" id="err-first_name" hidden></div>
+            </div>
+            <div class="field">
+              <label for="f-last_name">Last name</label>
+              <input id="f-last_name" name="last_name" type="text" autocomplete="family-name" maxlength="150" required>
+              <div class="field-error" id="err-last_name" hidden></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-email">Email</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+            <div class="field-error" id="err-email" hidden></div>
+          </div>
+          <div class="field">
+            <label for="f-company_type">Company type</label>
+            <select id="f-company_type" name="company_type" required>
+              <option value="" disabled selected>Select…</option>
+              <option value="limited_company">Limited company</option>
+              <option value="sole_trader">Sole trader</option>
+              <option value="partnership">Partnership</option>
+            </select>
+            <div class="field-error" id="err-company_type" hidden></div>
+          </div>
+        </div>
+
+        <p class="small-print" id="finance-smallprint"></p>
+        <div class="form-error" id="finance-error" role="alert" hidden></div>
+        <button type="submit" class="btn btn-primary btn-wide" id="finance-submit">
           Confirm application
         </button>
-      </div>
+      </form>
 
       <div id="finance-success-panel" hidden>
-        <div class="success-icon">✓</div>
-        <h2>Application sent</h2>
+        <div class="success-icon" aria-hidden="true">✓</div>
+        <h2 id="finance-success-title">Application sent</h2>
         <p id="finance-success-message"></p>
-        <button class="btn btn-secondary btn-wide" id="finance-done">Done</button>
+        <p class="reference-line">Your reference: <strong id="finance-reference"></strong></p>
+        <p class="small-print">Check your inbox for the secure link from Medifinance to complete your application.</p>
+        <button type="button" class="btn btn-secondary btn-wide" id="finance-done">Done</button>
       </div>
     </div>
   </div>
 
   <script>
-  // The "signed-in" store customer. A real integration would take this from
-  // Acme's own account system — hardcoded here for the demo.
-  const CUSTOMER = {
-    first_name: 'Jack',
-    last_name: 'Jones',
-    email: 'jack@jjdental.com',
-    ltd: true,
+  // ---- Demo session -------------------------------------------------------
+  // A real store would get the signed-in customer from its own accounts. For
+  // the demo, "Jack" can be signed in or out: `?guest=1` / `?signin=1` on the
+  // URL, the header link, or `window.ACME_CUSTOMER` (null = guest). The choice
+  // persists in localStorage so both modes can be shown live.
+  const DEMO_CUSTOMER = {
+    first_name: 'Jack', last_name: 'Jones', email: 'jack@jjdental.com',
+    company: 'JJ Dental Ltd', company_type: 'limited_company',
   };
+  const SESSION_KEY = 'acme-demo-session';
 
-  const modal = document.getElementById('finance-modal');
-  let selectedProductId = null;
+  function storageGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+  function storageSet(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode etc. */ } }
 
-  document.getElementById('product-grid').addEventListener('click', (e) => {
-    const card = e.target.closest('.product-card');
-    if (!card) return;
-    if (e.target.closest('.buy-now')) {
-      alert(`Demo store — '${card.dataset.name}' would go to checkout here.\n\nThis site exists to demonstrate the Get Finance flow.`);
-    } else if (e.target.closest('.get-finance')) {
-      selectedProductId = card.dataset.id;
-      document.getElementById('modal-product').textContent =
-        `${card.dataset.name} — £${card.dataset.price}`;
-      document.getElementById('finance-form-panel').hidden = false;
-      document.getElementById('finance-success-panel').hidden = true;
-      document.getElementById('finance-error').hidden = true;
-      modal.hidden = false;
+  (function applyUrlOverrides() {
+    const params = new URLSearchParams(location.search);
+    if (params.has('guest')) storageSet(SESSION_KEY, 'guest');
+    if (params.has('signin')) storageSet(SESSION_KEY, 'jack');
+    if (params.has('guest') || params.has('signin')) history.replaceState(null, '', location.pathname);
+  })();
+
+  if (window.ACME_CUSTOMER === undefined) {
+    window.ACME_CUSTOMER = storageGet(SESSION_KEY) === 'guest' ? null : DEMO_CUSTOMER;
+  }
+  const customer = () => window.ACME_CUSTOMER;
+  const isSignedIn = () => Boolean(customer());
+
+  function renderSession() {
+    const chip = document.getElementById('user-chip');
+    chip.replaceChildren();
+    if (isSignedIn()) {
+      const c = customer();
+      chip.append(
+        el('span', { class: 'avatar', 'aria-hidden': 'true' }, (c.first_name[0] + c.last_name[0]).toUpperCase()),
+        el('span', { class: 'user-details' },
+          el('strong', {}, `${c.first_name} ${c.last_name}`),
+          el('small', {}, c.company)),
+        el('a', { href: '/?guest=1', class: 'session-link' }, 'Sign out'),
+      );
+    } else {
+      chip.append(
+        el('span', { class: 'avatar avatar-guest', 'aria-hidden': 'true' }, '?'),
+        el('span', { class: 'user-details' }, el('strong', {}, 'Guest'), el('small', {}, 'Not signed in')),
+        el('a', { href: '/?signin=1', class: 'session-link' }, 'Sign in as Jack (demo)'),
+      );
     }
-  });
-
-  function closeFinanceModal() {
-    modal.hidden = true;
   }
 
-  document.getElementById('modal-close').addEventListener('click', closeFinanceModal);
-  document.getElementById('finance-done').addEventListener('click', closeFinanceModal);
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeFinanceModal();
-  });
+  // ---- Helpers --------------------------------------------------------------
+  function el(tag, attrs = {}, ...children) {
+    const node = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === 'class') node.className = v;
+      else if (k.startsWith('on')) node.addEventListener(k.slice(2), v);
+      else if (v != null && v !== false) node.setAttribute(k, v === true ? '' : v);
+    }
+    for (const c of children.flat()) if (c != null) node.append(typeof c === 'string' ? document.createTextNode(c) : c);
+    return node;
+  }
+  const gbp = (n) => '£' + Number(n).toLocaleString('en-GB');
 
-  document.getElementById('finance-submit').addEventListener('click', async () => {
+  let toastTimer;
+  function toast(message) {
+    const t = document.getElementById('toast');
+    t.textContent = message;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.hidden = true; }, 6000);
+  }
+
+  // ---- Products -------------------------------------------------------------
+  let PRODUCTS = [];
+  async function renderProducts() {
+    const grid = document.getElementById('product-grid');
+    try {
+      PRODUCTS = await (await fetch('/products.json')).json();
+    } catch {
+      grid.append(el('p', { class: 'form-error' }, 'Could not load the catalogue.'));
+      grid.setAttribute('aria-busy', 'false');
+      return;
+    }
+    grid.replaceChildren(...PRODUCTS.map((p) =>
+      el('article', { class: 'product-card', 'data-id': p.id, 'aria-labelledby': `product-${p.id}` },
+        el('div', { class: 'product-body' },
+          el('h2', { id: `product-${p.id}` }, p.name),
+          el('p', {}, p.description)),
+        el('div', { class: 'product-pricing' }, el('div', { class: 'price' }, gbp(p.price))),
+        el('div', { class: 'product-actions' },
+          el('button', { type: 'button', class: 'btn btn-secondary', 'aria-label': `Buy ${p.name} now (${gbp(p.price)})`,
+                         onclick: () => toast(`Demo store — '${p.name}' would go to checkout here. This site exists to demonstrate the Get Finance flow.`) }, 'Buy Now'),
+          el('button', { type: 'button', class: 'btn btn-primary', 'aria-label': `Get finance for ${p.name} (${gbp(p.price)})`,
+                         onclick: (e) => openFinance(p, e.currentTarget) }, 'Get Finance'),
+        ),
+      )));
+    grid.setAttribute('aria-busy', 'false');
+  }
+
+  // ---- Finance dialog -------------------------------------------------------
+  const modal = document.getElementById('finance-modal');
+  const dialog = document.getElementById('finance-dialog');
+  const form = document.getElementById('finance-form');
+  const FIELDS = ['first_name', 'last_name', 'email', 'company_type'];
+  let selectedProduct = null;
+  let opener = null;
+  let idempotencyKey = null;
+
+  function openFinance(product, trigger) {
+    selectedProduct = product;
+    opener = trigger;
+    idempotencyKey = (crypto.randomUUID && crypto.randomUUID()) || String(Date.now()) + Math.random();
+    document.getElementById('modal-product').textContent = `${product.name} — ${gbp(product.price)}`;
+    document.getElementById('finance-success-panel').hidden = true;
+    form.hidden = false;
+    dialog.setAttribute('aria-labelledby', 'modal-title');
+    clearErrors();
+
+    const signedIn = isSignedIn();
+    document.getElementById('signed-in-details').hidden = !signedIn;
+    document.getElementById('guest-fields').hidden = signedIn;
+    // Hidden-but-required inputs would silently block native form submission,
+    // so the guest fields are disabled (skipped by validation) when signed in.
+    for (const f of FIELDS) document.getElementById(`f-${f}`).disabled = signedIn;
+    if (signedIn) {
+      const c = customer();
+      document.getElementById('confirm-name').textContent = `${c.first_name} ${c.last_name}`;
+      document.getElementById('confirm-email').textContent = c.email;
+      document.getElementById('confirm-company').replaceChildren(
+        `${c.company} `, el('span', { class: 'tag' }, companyLabel(c.company_type)));
+      document.getElementById('finance-smallprint').textContent =
+        "Confirming starts a finance application with Medifinance using the account details above. You'll receive an email with a secure link to complete it — nothing is charged today.";
+    } else {
+      form.reset();
+      document.getElementById('finance-smallprint').textContent =
+        "Confirming starts a finance application with Medifinance. You'll receive an email with a secure link to complete it — nothing is charged today.";
+    }
+
+    modal.hidden = false;
+    document.body.classList.add('modal-open');
+    (signedIn ? document.getElementById('finance-submit') : document.getElementById('f-first_name')).focus();
+  }
+
+  function closeFinance() {
+    modal.hidden = true;
+    document.body.classList.remove('modal-open');
+    if (opener) opener.focus();
+  }
+
+  function companyLabel(v) {
+    return { limited_company: 'Limited company', sole_trader: 'Sole trader', partnership: 'Partnership' }[v] || v;
+  }
+
+  function clearErrors() {
+    document.getElementById('finance-error').hidden = true;
+    for (const f of FIELDS) {
+      const input = document.getElementById(`f-${f}`);
+      const err = document.getElementById(`err-${f}`);
+      err.hidden = true; err.textContent = '';
+      input.removeAttribute('aria-invalid');
+      input.removeAttribute('aria-describedby');
+    }
+  }
+
+  function showErrors(errors, fallback) {
+    const general = [];
+    let firstInvalid = null;
+    for (const e of errors || []) {
+      if (e.field && FIELDS.includes(e.field) && !isSignedIn()) {
+        const input = document.getElementById(`f-${e.field}`);
+        const err = document.getElementById(`err-${e.field}`);
+        err.textContent = e.message; err.hidden = false;
+        input.setAttribute('aria-invalid', 'true');
+        input.setAttribute('aria-describedby', `err-${e.field}`);
+        firstInvalid = firstInvalid || input;
+      } else {
+        general.push(e.message);
+      }
+    }
+    if (general.length || !errors?.length) {
+      const box = document.getElementById('finance-error');
+      box.textContent = general.join(' ') || fallback || 'Something went wrong — please try again.';
+      box.hidden = false;
+    }
+    if (firstInvalid) firstInvalid.focus();
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
     const submit = document.getElementById('finance-submit');
-    const errorBox = document.getElementById('finance-error');
-    errorBox.hidden = true;
+    clearErrors();
     submit.disabled = true;
     submit.textContent = 'Submitting…';
+
+    const applicant = isSignedIn()
+      ? (({ first_name, last_name, email, company_type }) => ({ first_name, last_name, email, company_type }))(customer())
+      : Object.fromEntries(new FormData(form).entries());
     try {
       const resp = await fetch('/api/finance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ source: 'store', product_id: selectedProductId, ...CUSTOMER }),
+        body: JSON.stringify({
+          source: isSignedIn() ? 'store' : 'guest',
+          product_id: selectedProduct.id,
+          idempotency_key: idempotencyKey,
+          ...applicant,
+        }),
       });
-      const data = await resp.json();
+      const data = await resp.json().catch(() => ({}));
       if (data.ok) {
+        document.getElementById('finance-success-title').textContent =
+          data.deduplicated ? 'Application already open' : 'Application sent';
         document.getElementById('finance-success-message').textContent = data.message;
-        document.getElementById('finance-form-panel').hidden = true;
+        const refLine = document.querySelector('.reference-line');
+        refLine.hidden = !data.application_reference;
+        document.getElementById('finance-reference').textContent = data.application_reference || '';
+        form.hidden = true;
         document.getElementById('finance-success-panel').hidden = false;
+        dialog.setAttribute('aria-labelledby', 'finance-success-title');
+        document.getElementById('finance-done').focus();
       } else {
-        errorBox.textContent = data.message || 'Something went wrong — please try again.';
-        errorBox.hidden = false;
+        showErrors(data.errors, data.message);
       }
     } catch {
-      errorBox.textContent = 'Could not reach the server — please try again.';
-      errorBox.hidden = false;
+      showErrors(null, 'Could not reach the server — please try again.');
     } finally {
       submit.disabled = false;
       submit.textContent = 'Confirm application';
     }
   });
+
+  document.getElementById('modal-close').addEventListener('click', closeFinance);
+  document.getElementById('finance-done').addEventListener('click', closeFinance);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeFinance(); });
+  document.addEventListener('keydown', (e) => {
+    if (modal.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); closeFinance(); return; }
+    if (e.key === 'Tab') {
+      // Keep keyboard focus inside the dialog while it's open.
+      const focusable = [...dialog.querySelectorAll('button, input, select, a[href]')].filter((n) => !n.disabled && n.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  renderSession();
+  renderProducts();
   </script>
 </body>
 </html>

@@ -2,3 +2,6 @@
 .env.local
 .vercel/
 node_modules/
+mcp/ui/card.generated.js
+test-results/
+playwright-report/

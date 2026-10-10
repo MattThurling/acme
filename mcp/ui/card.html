@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acme Ltd</title>
+<style>
+  :root {
+    --brand: #0e7c66; --brand-dark: #0a5c4c; --ink: #1d2733; --muted: #5b6b7b;
+    --line: #e3e8ee; --bg: #ffffff; --card: #f6f8fa; --ok-bg: #e5f4ef; --err-bg: #fdeeee; --err: #a13030;
+  }
+  :root[data-theme="dark"] {
+    --brand: #4fc3a8; --brand-dark: #7fdcc5; --ink: #e7ecf1; --muted: #a3b0bd;
+    --line: #2d3741; --bg: #151a20; --card: #1d242c; --ok-bg: #163b32; --err-bg: #3d1f1f; --err: #ff9f9f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 12px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         color: var(--ink); background: var(--bg); line-height: 1.45; font-size: 14px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 10px; }
+  .brand-mark { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 6px; background: var(--brand); color: #fff; font-size: 15px; }
+  .brand small { font-weight: 500; color: var(--muted); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; margin-left: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+  .product { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  .product h2 { margin: 0 0 4px; font-size: 15px; }
+  .product p { margin: 0; color: var(--muted); font-size: 13px; flex: 1; }
+  .price { font-size: 18px; font-weight: 700; margin: 10px 0 8px; }
+  .btn { padding: 8px 12px; border-radius: 8px; border: 1px solid transparent; font: inherit; font-weight: 600; cursor: pointer; }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:disabled { opacity: .6; cursor: default; }
+  .btn-secondary { background: transparent; color: var(--ink); border-color: var(--line); }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; max-width: 460px; }
+  .panel h2 { margin: 0 0 2px; font-size: 16px; }
+  .sub { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+  label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+  input, select { display: block; width: 100%; margin-top: 4px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px;
+                  font: inherit; background: var(--bg); color: var(--ink); }
+  input:focus, select:focus { outline: 2px solid var(--brand); outline-offset: -1px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .error { margin: 0 0 10px; padding: 8px 10px; border-radius: 8px; background: var(--err-bg); color: var(--err); font-size: 13px; }
+  .field-error { color: var(--err); font-weight: 500; font-size: 12px; margin-top: 3px; }
+  .small { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+  .success { background: var(--ok-bg); border-radius: 10px; padding: 14px; }
+  .tick { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 700; margin-right: 8px; }
+  .ref { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 700; }
+  .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .muted { color: var(--muted); }
+</style>
+</head>
+<body>
+<div id="root" aria-live="polite"><p class="muted">Loading Acme Ltd…</p></div>
+<script>__BUNDLE__</script>
+</body>
+</html>

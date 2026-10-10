@@ -1,3 +1,33 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "buildCommand": "npm run build",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Link", "value": "</.well-known/mcp/server-card.json>; rel=\"mcp\"" }
+      ]
+    },
+    {
+      "source": "/.well-known/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, If-None-Match" },
+        { "key": "Access-Control-Expose-Headers", "value": "ETag" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
+    {
+      "source": "/.well-known/mcp/server-card.json",
+      "headers": [{ "key": "Content-Type", "value": "application/mcp-server-card+json" }]
+    },
+    {
+      "source": "/.well-known/ai-catalog.json",
+      "headers": [{ "key": "Content-Type", "value": "application/ai-catalog+json" }]
+    }
+  ],
+  "rewrites": [
+    { "source": "/api/mcp/server-card", "destination": "/.well-known/mcp/server-card.json" }
+  ]
 }
