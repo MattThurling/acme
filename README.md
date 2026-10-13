@@ -24,8 +24,8 @@ Static HTML/CSS/JS plus Vercel serverless functions. No framework.
 
 | Path | What |
 |---|---|
-| `index.html`, `portal.html`, `style.css` | Store and staff portal pages |
-| `products.json` | **The** catalogue. Page, API and MCP server all read it; prices are only ever looked up server-side by id. |
+| `public/` | The static site: `index.html`, `portal.html`, `style.css`, `products.json`, `.well-known/` (Vercel serves this directory; functions live in `api/`) |
+| `public/products.json` | **The** catalogue. Page, API and MCP server all read it; prices are only ever looked up server-side by id. |
 | `lib/finance.js` | Shared "start an application" logic: validation, server-side price, rate limit, Medifinance call, response mapping |
 | `lib/medifinance.js` | Partner API client (bearer key stays server-side), idempotency keys, `MEDIFINANCE_MOCK` |
 | `lib/ratelimit.js` | In-memory per-IP / per-email limiter (demo only, see comment) |
@@ -33,7 +33,7 @@ Static HTML/CSS/JS plus Vercel serverless functions. No framework.
 | `api/mcp.js` | `POST /api/mcp` — the remote MCP server (Streamable HTTP, stateless) |
 | `mcp/server.js` | Tools + UI resource registration |
 | `mcp/ui/card.html`, `mcp/ui/card.js` | The in-chat card (MCP Apps). `npm run build` bundles them into `mcp/ui/card.generated.js` |
-| `.well-known/mcp/server-card.json` | MCP discovery (also at `/api/mcp/server-card`) |
+| `public/.well-known/mcp/server-card.json` | MCP discovery (also at `/api/mcp/server-card`) |
 | `scripts/dev-server.mjs` | Vercel-alike local server (no Vercel login needed) |
 | `tests/` | Playwright site tests and node:test MCP tests |
 

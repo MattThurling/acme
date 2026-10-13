@@ -1,5 +1,5 @@
 // Tiny Vercel-alike for local development and tests: serves the static site
-// (with clean URLs), the .well-known files, and routes /api/* to the
+// from public/ (with clean URLs), the .well-known files, and routes /api/* to the
 // serverless handlers with Vercel's `req.body` / `res.status().json()`
 // conveniences. `npx vercel dev` works too; this just needs no Vercel login.
 import http from "node:http";
@@ -7,7 +7,8 @@ import { createReadStream, existsSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = path.join(REPO, "public"); // static files live in public/, as on Vercel
 const PORT = Number(process.env.PORT || 3000);
 
 const TYPES = {
