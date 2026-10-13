@@ -23,7 +23,9 @@ const PUBLIC_ORIGIN = (process.env.PUBLIC_ORIGIN || "https://acme-amber-beta.ver
 
 const INSTRUCTIONS = `Acme Ltd is a UK dental equipment supplier. Use these tools when a UK dental or medical practice wants to buy or spread the cost of equipment (chairs, scanners, X-ray, milling, decontamination).
 
-Flow: search_products or get_product to find the item, then request_finance once the user has confirmed the product and given their first name, last name, email and company type (limited_company, sole_trader or partnership). request_finance starts a finance application with Medifinance, an FCA-regulated broker: Medifinance emails the applicant a secure link to complete it. Nothing is agreed, approved or charged by the tool call.
+The user may be a practice buying for itself, or a member of Acme staff acting for a customer. In the staff case the applicant details (name, email, company type) are the customer's, not the staff member's: read them back and get the staff member's confirmation before calling request_finance, because the secure link goes to that email.
+
+Flow: search_products or get_product to find the item, then request_finance once the user has confirmed the product and the applicant's first name, last name, email and company type (limited_company, sole_trader or partnership). request_finance starts a finance application with Medifinance, an FCA-regulated broker: Medifinance emails the applicant a secure link to complete it. Nothing is agreed, approved or charged by the tool call.
 
 Compliance: only repeat Medifinance's own wording from the tool result. Never quote or estimate APRs, interest rates, monthly payments or approval odds, and never say the applicant is approved — Medifinance handles all of that through its secure link.`;
 
@@ -119,8 +121,8 @@ export function createServer() {
     {
       title: "Start a Medifinance finance application",
       description:
-        "Start a finance application with Medifinance (an FCA-regulated UK broker) for one Acme product, on behalf of the user. " +
-        "Call this only after the user has confirmed the product and provided their first name, last name, email address and company type. " +
+        "Start a finance application with Medifinance (an FCA-regulated UK broker) for one Acme product, on behalf of the applicant: the user themselves, or a customer an Acme staff member is helping. " +
+        "Call this only after the user has confirmed the product and the applicant's first name, last name, email address and company type (the applicant's own details, since the secure link is emailed to them). " +
         "Medifinance then emails the applicant a secure link to complete the application; nothing is agreed, approved or charged by this call. " +
         "Returns Medifinance's application reference and its customer message — relay that message verbatim and do not add rates, payment figures or approval claims. " +
         "If it returns validation errors, correct the inputs and call again.",

@@ -1,15 +1,17 @@
 # Acme Ltd — Medifinance partner demo
 
-A demo dental-equipment supplier showing three ways a practice can get
-Medifinance asset finance, from most to least futuristic:
+A demo dental-equipment supplier showing how a Medifinance partner can take
+finance applications through every channel, including AI agents:
 
-1. **Inside an AI chat, no browser.** Claude or ChatGPT with the Acme MCP
-   connector: product and finance cards render in the chat and the
-   application is sent without leaving it.
-2. **A browser agent on the site.** The store is built so an agent can drive
-   it reliably (stable semantic markup, no native dialogs, closed dialogs
-   really closed).
-3. **A human on the site**, signed in as a demo customer or as a guest.
+1. **A browser agent on the site.** The store is built so an agent (Claude in
+   Chrome, ChatGPT agent mode) can drive the guest form reliably: stable
+   semantic markup, no native dialogs, closed dialogs really closed.
+2. **The supplier's staff inside Claude.** Acme's own MCP connector, installed
+   once for the team, lets a rep start an application for a customer without
+   leaving the chat. Product and confirmation cards render in the chat.
+3. **A customer inside a chat.** The same connector, used by the buyer
+   themselves, once consumer apps can discover suppliers automatically.
+4. **A human on the site**, signed in as a demo customer or as a guest.
 
 In every case the application is started through the **Medifinance partner
 API** (`POST /api/deals/`, contract in `medifinance-app/docs/partner-api.md`)
@@ -171,16 +173,62 @@ MIME type is `text/html;profile=mcp-app`.
 No test ever submits to production Medifinance: the suites run with
 `MEDIFINANCE_MOCK=1`, and manual testing should use a sandbox key.
 
-## Demo script
+## Demo scripts
 
-1. In Claude, with the Acme connector added, in a fresh chat:
-   "I'm fitting out a new surgery and need a dental chair — can I spread the cost?"
+Three scripts, in pitch order for a supplier audience. All three end with
+the same thing: a deal in the Medifinance CRM, attributed to Acme with the
+channel recorded, and Medifinance's secure-link email in the applicant's
+inbox. Use a Medifinance **sandbox** key if you don't want real emails.
+
+### 1. A browser agent on the site (lead with this)
+
+No connector, no install. This is how a niche supplier's site actually gets
+agent traffic.
+
+1. Open Claude in Chrome (or ChatGPT agent mode) and say:
+   "Go to acme-amber-beta.vercel.app and apply for finance on a dental chair
+   as a guest. The applicant is Priya Patel, priya@smiledental.example,
+   a sole trader."
+2. The agent signs out of the demo session (or you pre-open `/?guest=1`),
+   presses "Get finance for ErgoDent Signature Surgery Package (£32,750)",
+   fills the four labelled fields, confirms.
+3. The success state shows Medifinance's message and the `MF-…` reference.
+4. Point out why it worked first time: unique button names, a dialog that is
+   genuinely absent until opened, native inputs with labels, inline error
+   text instead of `alert()`. Then show the deal in the Medifinance CRM with
+   `channel = web-guest`.
+
+### 2. Supplier staff in Claude (the connector)
+
+One org-wide install; this is the realistic everyday use of the MCP server.
+
+1. With the Acme connector added to Claude (see above), in a fresh chat:
+   "Start a finance application for Dr Anjali Patel at Smile Dental,
+   drpatel@smiledental.example, limited company, for the OrthoVision CBCT
+   scanner."
+2. A product card for the OrthoVision 3D CBCT Scanner (£64,500) appears.
+   Claude reads the customer's details back and asks to run
+   `request_finance`; approve.
+3. The success card shows the reference and Medifinance's message. The email
+   goes to the customer, not the rep. In the CRM: `channel = mcp`,
+   `agent_client = claude`.
+
+### 3. A customer in chat (the closer)
+
+Same server, used by the buyer. Frame it as where this goes once consumer
+apps can discover suppliers automatically (the server card is the first step).
+
+1. In a fresh chat: "I'm fitting out a new surgery and need a dental chair —
+   can I spread the cost?"
 2. A product card for the ErgoDent Signature Surgery Package (£32,750) appears.
 3. "Yes, finance that one — I'm Jack Jones, jack@jjdental.com, limited company."
 4. Claude asks to run `request_finance`; approve. The success card shows the
    reference and Medifinance's message; the Medifinance email arrives.
-5. The same request by a browser agent on the website as a guest
-   (`/?guest=1`) also completes cleanly.
+
+**Why not pitch a consumer connector?** A connector only reaches accounts
+that have added it, so for a niche supplier it brings almost no end-customer
+traffic today. Its value is script 2 (staff) and the proof that the partner
+API copes with agent submissions; script 1 is where the reach is.
 
 ## Notes
 
